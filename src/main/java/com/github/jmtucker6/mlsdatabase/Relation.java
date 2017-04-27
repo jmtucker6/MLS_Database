@@ -1,6 +1,5 @@
 package main.java.com.github.jmtucker6.mlsdatabase;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Relation {
 	static final String[] PRIMARY_KEYS = {"A1", "B1", "C1"};
@@ -54,6 +53,7 @@ public class Relation {
 				Map<String, Integer> combinedEntry = new LinkedHashMap<String, Integer>();
 				combinedEntry.putAll(leftEntry);
 				combinedEntry.putAll(rightEntry);
+				combinedEntry.remove("TC");
 				combinedEntry.put("TC", maxTC);
 				productTuples.add(combinedEntry);
 			}
@@ -72,9 +72,12 @@ public class Relation {
 		Map<String, Integer> filteredRow;
 		List<Map<String, Integer>> filteredTable = new ArrayList<Map<String, Integer>>();
 		for (Map<String, Integer> tuple : tuples) {
-			filteredRow = tuple.entrySet().stream()
-					.filter(p -> columnNames.contains(p.getKey()))
-					.collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+			filteredRow = new LinkedHashMap<String, Integer>();
+			for (Map.Entry<String, Integer> entry : tuple.entrySet()) {
+				if (columnNames.contains(entry.getKey())) {
+					filteredRow.put(entry.getKey(), entry.getValue());
+				}
+			}
 			filteredTable.add(filteredRow);
 		}
 		return new Relation("filteredRelation", columnNames, filteredTable);
@@ -91,9 +94,9 @@ public class Relation {
 			tokens = condition.split("=");
 			leftSide = tokens[0];
 			rightSide = tokens[1];
-			if (rightSide.matches("^[A-Z]")) {
+			if (rightSide.matches("[A-Z].")) {
 				for (Map<String, Integer> tuple : tuples) {
-					if (tuple.get(leftSide) == tuple.get(rightSide))
+					if (tuple.get(leftSide).equals(tuple.get(rightSide)))
 						filteredTuples.add(tuple);
 				}
 			} else {
@@ -104,5 +107,14 @@ public class Relation {
 			}
 			this.tuples = new ArrayList<Map<String, Integer>>(filteredTuples);
 		}
+	}
+	
+	public void filterClassified(int classificationLevel) {
+		List<Map<String, Integer>> filteredTuples = new ArrayList<Map<String, Integer>>();
+		for (Map<String, Integer> tuple : tuples) {
+			if (tuple.get("TC") <= classificationLevel)
+				filteredTuples.add(tuple);
+		}
+		this.tuples = new ArrayList<Map<String, Integer>>(filteredTuples);
 	}
 }

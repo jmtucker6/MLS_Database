@@ -30,6 +30,7 @@ public class Database {
 			}
 		}
 		relation.applyConditions(query.getConditions());
+		relation.filterClassified(query.getClassificationLevel());
 		relation = relation.selectColumns(query.getColumnNames());
 		return relation;
 	}

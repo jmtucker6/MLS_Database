@@ -11,19 +11,16 @@ public class Main {
 		tables.put("T3", readTableFromFile("T3.txt", "T3"));
 		Database database = new Database(tables);
 
-		for (Relation r : database.getTables().values()) {
-			System.out.println(r.getTuples().toString());
-		}
-		
-		List<String> columnNames = new ArrayList<String>();
-		columnNames.add("C2");
-		List<String> tableNames = new ArrayList<String>();
-		tableNames.add("T3");
-		List<String> conditions = new ArrayList<String>();
-		conditions.add("C3=50");
-		conditions.add("TC=2");
-		Query query = new Query(tableNames, columnNames, conditions);
+		System.out.println("Enter classification level");
+		Scanner scanner = new Scanner(System.in);
+		int classificationLevel = scanner.nextInt();
+		scanner.nextLine();
+		System.out.println("Enter a query:");
+		String userQuery = scanner.nextLine();
+		Query query = new Query(classificationLevel);
+		query.parseUserQuery(userQuery);
 		System.out.println(database.processQuery(query).getTuples().toString());
+		scanner.close();
 	}
 	
 	private static Relation readTableFromFile(String fileName, String relationName) {
@@ -44,7 +41,7 @@ public class Main {
 			}
 			
 			while ((currLine = reader.readLine()) != null) {
-				tuple = new HashMap<String, Integer>();
+				tuple = new LinkedHashMap<String, Integer>();
 				tokens = currLine.split("\\s");
 				for (int i = 0; i < tokens.length; i++) {
 					tuple.put(columnNames.get(i), Integer.parseInt(tokens[i]));
