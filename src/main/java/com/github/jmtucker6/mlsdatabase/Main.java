@@ -19,7 +19,8 @@ public class Main {
 		String userQuery = readQuery(scanner);
 		Query query = new Query(classificationLevel);
 		query.parseUserQuery(userQuery);
-		System.out.println(database.processQuery(query).getTuples().toString());
+		database.processQuery(query).printRelation();
+		//System.out.println(database.processQuery(query).getTuples().toString());
 		scanner.close();
 	}
 	

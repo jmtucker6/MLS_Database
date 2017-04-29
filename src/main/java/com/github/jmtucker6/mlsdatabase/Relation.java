@@ -43,6 +43,8 @@ public class Relation {
 		List<Map<String, Integer>> rightTuples = rightRelation.getTuples();
 		List<String> productColumnNames = this.columnNames;
 		productColumnNames.addAll(rightRelation.getColumnNames());
+		productColumnNames.removeIf(p -> p.equals("TC"));
+		productColumnNames.add("TC");
 		List<Map<String, Integer>> productTuples = new ArrayList<Map<String, Integer>>();
 		int maxTC;
 		for (Map<String, Integer> leftEntry : leftTuples) {
@@ -62,6 +64,8 @@ public class Relation {
 	}
 	
 	public Relation selectColumns(List<String> columnNames) {
+		if (columnNames.get(0).equals("*"))
+			return this;
 		for (String primaryKey : PRIMARY_KEYS)
 			if (columnNames.contains(primaryKey)) {
 				columnNames.add("KC");
@@ -119,5 +123,33 @@ public class Relation {
 				filteredTuples.add(tuple);
 		}
 		this.tuples = new ArrayList<Map<String, Integer>>(filteredTuples);
+	}
+	
+	public void printRelation() {
+		List<String> outputColumns = new ArrayList<String>();
+		String previousColumn = "";
+		for (String columnName : columnNames) {
+			if (columnName.equals("KC"))
+				continue;
+			if (previousColumn.matches(".1")) {
+				outputColumns.add("KC");
+			}
+			outputColumns.add(columnName);
+			previousColumn = columnName;
+		}
+		for (String columnName : outputColumns) {
+			System.out.print(columnName + "\t" );
+		}
+		System.out.println();
+		for (int i = 0; i < outputColumns.size(); i++) {
+			System.out.print("---" + "\t");
+		}
+		System.out.println();
+		for (Map<String, Integer> tuple : tuples) {
+			for (String columnName : outputColumns) {
+				System.out.print(tuple.get(columnName).toString() + "\t");
+			}
+			System.out.println();
+		}
 	}
 }
