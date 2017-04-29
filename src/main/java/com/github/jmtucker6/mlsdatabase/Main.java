@@ -20,7 +20,6 @@ public class Main {
 		Query query = new Query(classificationLevel);
 		query.parseUserQuery(userQuery);
 		database.processQuery(query).printRelation();
-		//System.out.println(database.processQuery(query).getTuples().toString());
 		scanner.close();
 	}
 	
