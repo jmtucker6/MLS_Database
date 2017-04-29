@@ -83,7 +83,7 @@ public class Relation {
 		return new Relation("filteredRelation", columnNames, filteredTable);
 	}
 
-	public void applyConditions(List<String> conditions) {
+	public void applyConditions(List<String> conditions, int classificationLevel) throws ClassificationLevelException {
 		if (conditions.isEmpty())
 			return;
 		List<Map<String, Integer>> filteredTuples = new ArrayList<Map<String, Integer>>();
@@ -94,6 +94,9 @@ public class Relation {
 			tokens = condition.split("=");
 			leftSide = tokens[0];
 			rightSide = tokens[1];
+			if (leftSide.equals("TC") && classificationLevel < Integer.parseInt(rightSide)) {
+				throw new ClassificationLevelException();
+			}
 			if (rightSide.matches("[A-Z].")) {
 				for (Map<String, Integer> tuple : tuples) {
 					if (tuple.get(leftSide).equals(tuple.get(rightSide)))

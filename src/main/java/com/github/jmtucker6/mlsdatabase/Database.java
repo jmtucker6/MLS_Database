@@ -29,7 +29,12 @@ public class Database {
 				relation = relation.cartesianProduct(tables.get(tableNames.get(i)));
 			}
 		}
-		relation.applyConditions(query.getConditions());
+		try {
+			relation.applyConditions(query.getConditions(), query.getClassificationLevel());
+		} catch (Exception e) {
+			System.out.println("Error: Security Level Violation");
+			System.exit(0);
+		}
 		relation.filterClassified(query.getClassificationLevel());
 		relation = relation.selectColumns(query.getColumnNames());
 		return relation;
