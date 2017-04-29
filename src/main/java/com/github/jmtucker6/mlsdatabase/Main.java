@@ -16,7 +16,7 @@ public class Main {
 		int classificationLevel = scanner.nextInt();
 		scanner.nextLine();
 		System.out.println("Enter a query:");
-		String userQuery = scanner.nextLine();
+		String userQuery = readQuery(scanner);
 		Query query = new Query(classificationLevel);
 		query.parseUserQuery(userQuery);
 		System.out.println(database.processQuery(query).getTuples().toString());
@@ -57,6 +57,15 @@ public class Main {
 			return null;
 		}
 		
+	}
+	
+	private static String readQuery(Scanner scanner) {
+		String query = "";
+		do {
+			query += scanner.nextLine() + " ";
+		} while (!query.contains(";"));
+		query = query.trim();
+		return query;
 	}
 
 }
