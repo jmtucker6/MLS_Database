@@ -38,6 +38,12 @@ public class Relation {
 		this.tuples = tuples;
 	}
 	
+	/**
+	 * Joins to relations according to a join condition
+	 * @param rightRelation relation object to be joined
+	 * @param joinCondition null if no join condition
+	 * @return joined relation
+	 */
 	public Relation join(Relation rightRelation, String joinCondition) {
 		List<String> productColumnNames = this.columnNames;
 		productColumnNames.addAll(rightRelation.getColumnNames());
@@ -52,6 +58,11 @@ public class Relation {
 		return new Relation("result", productColumnNames, resultTuples);
 	}
 	
+	/**
+	 * Simple Cartesian product operation
+	 * @param rightRelation right side of product
+	 * @return set of product tuples
+	 */
 	public Set<Map<String, Integer>> cartesianProduct(Relation rightRelation) {
 		Set<Map<String, Integer>> leftTuples = this.tuples;
 		Set<Map<String, Integer>> rightTuples = rightRelation.getTuples();
@@ -68,6 +79,12 @@ public class Relation {
 		return productTuples;
 	}
 	
+	/**
+	 * Hash Join operation
+	 * @param rightRelation relation to be joined
+	 * @param condition join condition
+	 * @return set of joined tuples
+	 */
 	public Set<Map<String, Integer>> hashJoin(Relation rightRelation, String condition) {
 		String leftSide, rightSide;
 		Map<Integer, Set<Map<String, Integer>>> map = new HashMap<Integer, Set<Map<String, Integer>>>();
@@ -91,6 +108,13 @@ public class Relation {
 
 	}
 
+	/**
+	 * Combine to tuple maps
+	 * @param productTable set in which to place tuple
+	 * @param leftTuple
+	 * @param rightTuple
+	 * @param maxTC maximum TC between the two tuples
+	 */
 	private void joinLeftRight(Set<Map<String, Integer>> productTable, Map<String, Integer> leftTuple,
 			Map<String, Integer> rightTuple, int maxTC) {
 		Map<String, Integer> productTuple;
@@ -102,6 +126,12 @@ public class Relation {
 		productTable.add(productTuple);
 	}
 
+	/**
+	 * Helper function for hash join operation
+	 * @param rightRelation
+	 * @param rightSide column which functions as key for map
+	 * @param map
+	 */
 	private void createHashJoinMap(Relation rightRelation, String rightSide,
 			Map<Integer, Set<Map<String, Integer>>> map) {
 		Set<Map<String, Integer>> tupleSet;
@@ -116,6 +146,11 @@ public class Relation {
 		}
 	}
 	
+	/**
+	 * filters tuples to include only columnNames (and applicable KC and TC)
+	 * @param columnNames name of final columns
+	 * @return filtered Relation
+	 */
 	public Relation selectColumns(List<String> columnNames) {
 		if (columnNames.get(0).equals("*"))
 			return this;
@@ -140,6 +175,12 @@ public class Relation {
 		return new Relation("filteredRelation", columnNames, filteredTable);
 	}
 
+	/**
+	 * Filters relation based on select conditions
+	 * @param conditions select conditions
+	 * @param classificationLevel caller classification level
+	 * @throws ClassificationLevelException cannot specify TC=x where x is greater than callers classification.
+	 */
 	public void applyConditions(List<String> conditions, int classificationLevel) throws ClassificationLevelException {
 		if (conditions.isEmpty())
 			return;
@@ -169,6 +210,10 @@ public class Relation {
 		}
 	}
 	
+	/**
+	 * filter relation based on classification level of caller
+	 * @param classificationLevel callers classification level
+	 */
 	public void filterClassified(int classificationLevel) {
 		Set<Map<String, Integer>> filteredTuples = new LinkedHashSet<Map<String, Integer>>();
 		for (Map<String, Integer> tuple : tuples) {
@@ -178,6 +223,9 @@ public class Relation {
 		this.tuples = new LinkedHashSet<Map<String, Integer>>(filteredTuples);
 	}
 	
+	/**
+	 * output relation to console
+	 */
 	public void printRelation() {
 		List<String> outputColumns = new ArrayList<String>();
 		String previousColumn = "";

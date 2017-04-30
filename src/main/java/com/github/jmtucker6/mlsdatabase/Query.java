@@ -76,6 +76,10 @@ public class Query {
 		this.classificationLevel = classificationLevel;
 	}
 	
+	/**
+	 * Converts a string query into a query objects using the components
+	 * @param userQuery string query
+	 */
 	public void parseUserQuery(String userQuery) {
 		userQuery = userQuery.toUpperCase();
 		String[] selectStage;
@@ -91,6 +95,10 @@ public class Query {
 		}
 	}
 	
+	/**
+	 * Separates generic conditions into join and select conditions
+	 * @param conditions
+	 */
 	private void separateConditions(List<String> conditions) {
 		String[] tokens;
 		for (String condition : conditions) {

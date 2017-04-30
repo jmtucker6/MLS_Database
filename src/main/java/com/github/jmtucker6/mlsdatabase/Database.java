@@ -21,6 +21,11 @@ public class Database {
 		tables.put(relation.getName(), relation);
 	}
 	
+	/**
+	 * Processes query object
+	 * @param query query object
+	 * @return result Relation after query is applied
+	 */
 	public Relation processQuery(Query query) {
 		List<String> tableNames = query.getTableNames();
 		Relation relation = tables.get(tableNames.get(0));

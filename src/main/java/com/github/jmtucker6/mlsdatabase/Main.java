@@ -23,7 +23,13 @@ public class Main {
 		scanner.close();
 	}
 	
-	private static Relation readTableFromFile(String fileName, String relationName) {
+	/**
+	 * Reads a file and parses data to create a relation
+	 * @param fileName name of the file to be read
+	 * @param relationName name of the relation to be created
+	 * @return returns relation object containing data from the file
+	 */
+	public static Relation readTableFromFile(String fileName, String relationName) {
 		FileReader fr;
 		BufferedReader reader;
 		String currLine;
@@ -59,6 +65,11 @@ public class Main {
 		
 	}
 	
+	/**
+	 * Reads a multi-line (or single) query from the console
+	 * @param scanner
+	 * @return single string query
+	 */
 	private static String readQuery(Scanner scanner) {
 		String query = "";
 		do {
