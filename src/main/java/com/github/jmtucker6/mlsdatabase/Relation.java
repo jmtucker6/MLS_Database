@@ -63,6 +63,56 @@ public class Relation {
 		return new Relation("product", productColumnNames, productTuples);
 	}
 	
+	public List<Map<String, Integer>> hashJoin(Relation rightRelation, String condition) {
+		String leftSide, rightSide;
+		Map<Integer, List<Map<String, Integer>>> map = new HashMap<Integer, List<Map<String, Integer>>>();
+		Map<String, Integer> productTuple;
+		List<Map<String, Integer>> productTable = new ArrayList<Map<String, Integer>>();
+		String tokens[] = condition.split("=");
+		leftSide = tokens[0];
+		rightSide = tokens[1];
+		createHashJoinMap(rightRelation, rightSide, map);
+		for (Map<String, Integer> leftTuple : tuples) {
+			if (map.containsKey(leftTuple.get(leftSide))) {
+				for (Map<String, Integer> rightTuple : map.get(leftTuple.get(leftSide))) {
+					if (!leftTuple.get("KC").equals(rightTuple.get("KC"))) {
+						continue;
+					}
+					int maxTC = Math.max(leftTuple.get("TC"), rightTuple.get("TC"));
+					productTuple = matchHashJoin(productTable, leftTuple, rightTuple, maxTC);
+				}
+			}
+		}
+		return productTable;
+
+	}
+
+	private Map<String, Integer> matchHashJoin(List<Map<String, Integer>> productTable, Map<String, Integer> leftTuple,
+			Map<String, Integer> rightTuple, int maxTC) {
+		Map<String, Integer> productTuple;
+		productTuple = new LinkedHashMap<String, Integer>();
+		productTuple.putAll(leftTuple);
+		productTuple.putAll(rightTuple);
+		productTuple.remove("TC");
+		productTuple.put("TC", maxTC);
+		productTable.add(productTuple);
+		return productTuple;
+	}
+
+	private void createHashJoinMap(Relation rightRelation, String rightSide,
+			Map<Integer, List<Map<String, Integer>>> map) {
+		List<Map<String, Integer>> tupleList;
+		for (Map<String, Integer> rightTuple : rightRelation.getTuples()) {
+			if (map.containsKey(rightTuple.get(rightSide))) {
+				 tupleList = map.get(rightTuple.get(rightSide));
+			} else {
+				 tupleList = new ArrayList<Map<String, Integer>>();
+			}
+			tupleList.add(rightTuple);
+			map.put(rightTuple.get(rightSide), tupleList);
+		}
+	}
+	
 	public Relation selectColumns(List<String> columnNames) {
 		if (columnNames.get(0).equals("*"))
 			return this;

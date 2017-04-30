@@ -10,6 +10,7 @@ public class Main {
 		tables.put("T2", readTableFromFile("T2.txt", "T2"));
 		tables.put("T3", readTableFromFile("T3.txt", "T3"));
 		Database database = new Database(tables);
+		List<Map<String, Integer>> relationList = tables.get("T1").hashJoin(tables.get("T3"), "A1=C4");
 
 		System.out.println("Enter classification level");
 		Scanner scanner = new Scanner(System.in);
