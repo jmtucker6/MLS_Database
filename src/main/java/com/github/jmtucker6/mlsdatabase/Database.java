@@ -39,7 +39,7 @@ public class Database {
 			relation.applyConditions(query.getSelectConditions(), query.getClassificationLevel());
 		} catch (Exception e) {
 			System.out.println("Error: Security Level Violation");
-			System.exit(0);
+			System.exit(1);
 		}
 		relation.filterClassified(query.getClassificationLevel());
 		relation = relation.selectColumns(query.getColumnNames());
