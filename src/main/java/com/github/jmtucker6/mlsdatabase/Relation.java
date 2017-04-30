@@ -5,9 +5,9 @@ public class Relation {
 	static final String[] PRIMARY_KEYS = {"A1", "B1", "C1"};
 	String name;
 	List<String> columnNames;
-	List<Map<String, Integer>> tuples;
+	Set<Map<String, Integer>> tuples;
 
-	public Relation(String name, List<String> columnNames, List<Map<String, Integer>> tuples) {
+	public Relation(String name, List<String> columnNames, Set<Map<String, Integer>> tuples) {
 		super();
 		this.name = name;
 		this.columnNames = columnNames;
@@ -30,22 +30,22 @@ public class Relation {
 		this.columnNames = columnNames;
 	}
 
-	public List<Map<String, Integer>> getTuples() {
+	public Set<Map<String, Integer>> getTuples() {
 		return tuples;
 	}
 
-	public void setTuples(List<Map<String, Integer>> tuples) {
+	public void setTuples(Set<Map<String, Integer>> tuples) {
 		this.tuples = tuples;
 	}
 	
 	public Relation cartesianProduct(Relation rightRelation) {
-		List<Map<String, Integer>> leftTuples = this.tuples;
-		List<Map<String, Integer>> rightTuples = rightRelation.getTuples();
+		Set<Map<String, Integer>> leftTuples = this.tuples;
+		Set<Map<String, Integer>> rightTuples = rightRelation.getTuples();
 		List<String> productColumnNames = this.columnNames;
 		productColumnNames.addAll(rightRelation.getColumnNames());
 		productColumnNames.removeIf(p -> p.equals("TC"));
 		productColumnNames.add("TC");
-		List<Map<String, Integer>> productTuples = new ArrayList<Map<String, Integer>>();
+		Set<Map<String, Integer>> productTuples = new LinkedHashSet<Map<String, Integer>>();
 		int maxTC;
 		for (Map<String, Integer> leftEntry : leftTuples) {
 			for (Map<String, Integer> rightEntry : rightTuples) {
@@ -63,11 +63,10 @@ public class Relation {
 		return new Relation("product", productColumnNames, productTuples);
 	}
 	
-	public List<Map<String, Integer>> hashJoin(Relation rightRelation, String condition) {
+	public Set<Map<String, Integer>> hashJoin(Relation rightRelation, String condition) {
 		String leftSide, rightSide;
-		Map<Integer, List<Map<String, Integer>>> map = new HashMap<Integer, List<Map<String, Integer>>>();
-		Map<String, Integer> productTuple;
-		List<Map<String, Integer>> productTable = new ArrayList<Map<String, Integer>>();
+		Map<Integer, Set<Map<String, Integer>>> map = new HashMap<Integer, Set<Map<String, Integer>>>();
+		Set<Map<String, Integer>> productTable = new LinkedHashSet<Map<String, Integer>>();
 		String tokens[] = condition.split("=");
 		leftSide = tokens[0];
 		rightSide = tokens[1];
@@ -79,7 +78,7 @@ public class Relation {
 						continue;
 					}
 					int maxTC = Math.max(leftTuple.get("TC"), rightTuple.get("TC"));
-					productTuple = matchHashJoin(productTable, leftTuple, rightTuple, maxTC);
+					matchHashJoin(productTable, leftTuple, rightTuple, maxTC);
 				}
 			}
 		}
@@ -87,7 +86,7 @@ public class Relation {
 
 	}
 
-	private Map<String, Integer> matchHashJoin(List<Map<String, Integer>> productTable, Map<String, Integer> leftTuple,
+	private void matchHashJoin(Set<Map<String, Integer>> productTable, Map<String, Integer> leftTuple,
 			Map<String, Integer> rightTuple, int maxTC) {
 		Map<String, Integer> productTuple;
 		productTuple = new LinkedHashMap<String, Integer>();
@@ -96,20 +95,19 @@ public class Relation {
 		productTuple.remove("TC");
 		productTuple.put("TC", maxTC);
 		productTable.add(productTuple);
-		return productTuple;
 	}
 
 	private void createHashJoinMap(Relation rightRelation, String rightSide,
-			Map<Integer, List<Map<String, Integer>>> map) {
-		List<Map<String, Integer>> tupleList;
+			Map<Integer, Set<Map<String, Integer>>> map) {
+		Set<Map<String, Integer>> tupleSet;
 		for (Map<String, Integer> rightTuple : rightRelation.getTuples()) {
 			if (map.containsKey(rightTuple.get(rightSide))) {
-				 tupleList = map.get(rightTuple.get(rightSide));
+				 tupleSet = map.get(rightTuple.get(rightSide));
 			} else {
-				 tupleList = new ArrayList<Map<String, Integer>>();
+				 tupleSet = new LinkedHashSet<Map<String, Integer>>();
 			}
-			tupleList.add(rightTuple);
-			map.put(rightTuple.get(rightSide), tupleList);
+			tupleSet.add(rightTuple);
+			map.put(rightTuple.get(rightSide), tupleSet);
 		}
 	}
 	
@@ -124,7 +122,7 @@ public class Relation {
 		if (!columnNames.contains("TC"))
 			columnNames.add("TC");
 		Map<String, Integer> filteredRow;
-		List<Map<String, Integer>> filteredTable = new ArrayList<Map<String, Integer>>();
+		Set<Map<String, Integer>> filteredTable = new LinkedHashSet<Map<String, Integer>>();
 		for (Map<String, Integer> tuple : tuples) {
 			filteredRow = new LinkedHashMap<String, Integer>();
 			for (Map.Entry<String, Integer> entry : tuple.entrySet()) {
@@ -140,7 +138,7 @@ public class Relation {
 	public void applyConditions(List<String> conditions, int classificationLevel) throws ClassificationLevelException {
 		if (conditions.isEmpty())
 			return;
-		List<Map<String, Integer>> filteredTuples = new ArrayList<Map<String, Integer>>();
+		Set<Map<String, Integer>> filteredTuples = new LinkedHashSet<Map<String, Integer>>();
 		String[] tokens;
 		String leftSide, rightSide;
 		for (String condition : conditions) {
@@ -162,17 +160,17 @@ public class Relation {
 						filteredTuples.add(tuple);
 				}
 			}
-			this.tuples = new ArrayList<Map<String, Integer>>(filteredTuples);
+			this.tuples = new LinkedHashSet<Map<String, Integer>>(filteredTuples);
 		}
 	}
 	
 	public void filterClassified(int classificationLevel) {
-		List<Map<String, Integer>> filteredTuples = new ArrayList<Map<String, Integer>>();
+		Set<Map<String, Integer>> filteredTuples = new LinkedHashSet<Map<String, Integer>>();
 		for (Map<String, Integer> tuple : tuples) {
 			if (tuple.get("TC") <= classificationLevel)
 				filteredTuples.add(tuple);
 		}
-		this.tuples = new ArrayList<Map<String, Integer>>(filteredTuples);
+		this.tuples = new LinkedHashSet<Map<String, Integer>>(filteredTuples);
 	}
 	
 	public void printRelation() {

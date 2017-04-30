@@ -10,7 +10,7 @@ public class Main {
 		tables.put("T2", readTableFromFile("T2.txt", "T2"));
 		tables.put("T3", readTableFromFile("T3.txt", "T3"));
 		Database database = new Database(tables);
-		List<Map<String, Integer>> relationList = tables.get("T1").hashJoin(tables.get("T3"), "A1=C4");
+		Set<Map<String, Integer>> relationList = tables.get("T1").hashJoin(tables.get("T3"), "A1=C4");
 
 		System.out.println("Enter classification level");
 		Scanner scanner = new Scanner(System.in);
@@ -31,7 +31,7 @@ public class Main {
 		String[] tokens;
 		List<String> columnNames = new ArrayList<String>();
 		Map<String, Integer> tuple;
-		List<Map<String, Integer>> relationTuples = new ArrayList<Map<String, Integer>>();
+		Set<Map<String, Integer>> relationTuples = new LinkedHashSet<Map<String, Integer>>();
 		try {
 			fr = new FileReader(fileName);
 			reader = new BufferedReader(fr);
