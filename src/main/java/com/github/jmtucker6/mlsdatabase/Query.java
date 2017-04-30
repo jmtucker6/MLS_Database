@@ -68,9 +68,9 @@ public class Query {
 	public void parseUserQuery(String userQuery) {
 		userQuery = userQuery.toUpperCase();
 		String[] selectStage;
-		selectStage = userQuery.split("SELECT\\s|\\sFROM\\s");
+		selectStage = userQuery.split("SELECT\\s*|\\s*FROM\\s*");
 		columnNames = new ArrayList<String>(Arrays.asList(selectStage[1].split(",\\s*")));
-		String[] fromStage = selectStage[2].split("\\sWHERE\\s");
+		String[] fromStage = selectStage[2].split("\\s*WHERE\\s*");
 		fromStage[0] = fromStage[0].replaceAll(";", "");
 		tableNames = new ArrayList<String>(Arrays.asList(fromStage[0].split(",\\s")));
 		if (fromStage.length > 1) {

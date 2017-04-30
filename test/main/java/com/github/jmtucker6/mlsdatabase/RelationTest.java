@@ -30,8 +30,8 @@ public class RelationTest {
 		tuple4.put("c", 3);
 		tuple4.put("d", 4);
 		
-		List<Map<String, Integer>> leftTuples = new ArrayList<Map<String, Integer>>();
-		List<Map<String, Integer>> rightTuples = new ArrayList<Map<String, Integer>>();
+		Set<Map<String, Integer>> leftTuples = new LinkedHashSet<Map<String, Integer>>();
+		Set<Map<String, Integer>> rightTuples = new LinkedHashSet<Map<String, Integer>>();
 		
 		leftTuples.add(tuple1);
 		leftTuples.add(tuple2);
@@ -41,7 +41,7 @@ public class RelationTest {
 		Relation leftRelation = new Relation("left", leftColumns, leftTuples);
 		Relation rightRelation = new Relation("right", rightColumns, rightTuples);
 		
-		Relation result = leftRelation.cartesianProduct(rightRelation);
+		Relation result = leftRelation.join(rightRelation, null);
 		System.out.println(result.getTuples().toString());
 		assertEquals(result.getTuples().toString(), "[{a=1, b=2, c=1, d=2}, {a=1, b=2, c=3, d=4}, {a=2, b=3, c=1, d=2}, {a=2, b=3, c=3, d=4}]");
 	}

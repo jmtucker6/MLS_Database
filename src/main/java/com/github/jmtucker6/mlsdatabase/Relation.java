@@ -38,13 +38,23 @@ public class Relation {
 		this.tuples = tuples;
 	}
 	
-	public Relation cartesianProduct(Relation rightRelation) {
-		Set<Map<String, Integer>> leftTuples = this.tuples;
-		Set<Map<String, Integer>> rightTuples = rightRelation.getTuples();
+	public Relation join(Relation rightRelation, String joinCondition) {
 		List<String> productColumnNames = this.columnNames;
 		productColumnNames.addAll(rightRelation.getColumnNames());
 		productColumnNames.removeIf(p -> p.equals("TC"));
 		productColumnNames.add("TC");
+		Set<Map<String, Integer>> resultTuples;
+		if (joinCondition == null) {
+			resultTuples = cartesianProduct(rightRelation);
+		} else {
+			resultTuples = hashJoin(rightRelation, joinCondition);
+		}
+		return new Relation("result", productColumnNames, resultTuples);
+	}
+	
+	public Set<Map<String, Integer>> cartesianProduct(Relation rightRelation) {
+		Set<Map<String, Integer>> leftTuples = this.tuples;
+		Set<Map<String, Integer>> rightTuples = rightRelation.getTuples();
 		Set<Map<String, Integer>> productTuples = new LinkedHashSet<Map<String, Integer>>();
 		int maxTC;
 		for (Map<String, Integer> leftEntry : leftTuples) {
@@ -52,15 +62,10 @@ public class Relation {
 				if (leftEntry.get("KC") != rightEntry.get("KC"))
 					continue;
 				maxTC = Math.max(leftEntry.get("TC"), rightEntry.get("TC"));
-				Map<String, Integer> combinedEntry = new LinkedHashMap<String, Integer>();
-				combinedEntry.putAll(leftEntry);
-				combinedEntry.putAll(rightEntry);
-				combinedEntry.remove("TC");
-				combinedEntry.put("TC", maxTC);
-				productTuples.add(combinedEntry);
+				joinLeftRight(productTuples, leftEntry, rightEntry, maxTC);
 			}
 		}
-		return new Relation("product", productColumnNames, productTuples);
+		return productTuples;
 	}
 	
 	public Set<Map<String, Integer>> hashJoin(Relation rightRelation, String condition) {
@@ -78,7 +83,7 @@ public class Relation {
 						continue;
 					}
 					int maxTC = Math.max(leftTuple.get("TC"), rightTuple.get("TC"));
-					matchHashJoin(productTable, leftTuple, rightTuple, maxTC);
+					joinLeftRight(productTable, leftTuple, rightTuple, maxTC);
 				}
 			}
 		}
@@ -86,7 +91,7 @@ public class Relation {
 
 	}
 
-	private void matchHashJoin(Set<Map<String, Integer>> productTable, Map<String, Integer> leftTuple,
+	private void joinLeftRight(Set<Map<String, Integer>> productTable, Map<String, Integer> leftTuple,
 			Map<String, Integer> rightTuple, int maxTC) {
 		Map<String, Integer> productTuple;
 		productTuple = new LinkedHashMap<String, Integer>();

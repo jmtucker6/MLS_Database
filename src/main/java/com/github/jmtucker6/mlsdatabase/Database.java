@@ -26,7 +26,7 @@ public class Database {
 		Relation relation = tables.get(tableNames.get(0));
 		if (tableNames.size() > 1) {
 			for (int i = 1; i < tableNames.size(); i++) {
-				relation = relation.cartesianProduct(tables.get(tableNames.get(i)));
+				relation = relation.join(tables.get(tableNames.get(i)), null);
 			}
 		}
 		try {
