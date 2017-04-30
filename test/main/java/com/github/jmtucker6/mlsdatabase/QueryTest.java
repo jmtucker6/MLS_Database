@@ -10,7 +10,7 @@ public class QueryTest {
 	public void testParseUserQuery() {
 		Query query = new Query();
 		query.parseUserQuery("SELECT C2 FROM T3 WHERE C3=50 AND C1=2;"); 
-		assertEquals(query.getColumnNames().get(1), "C2");
+		assertEquals(query.getColumnNames().get(0), "C2");
 	}
 
 }

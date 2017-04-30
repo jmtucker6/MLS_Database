@@ -2,14 +2,15 @@ package main.java.com.github.jmtucker6.mlsdatabase;
 import java.util.*;
 
 public class Query {
-	private List<String> tableNames, columnNames, conditions;
+	private List<String> tableNames, columnNames, selectConditions, joinConditions;
 	private int classificationLevel;
 
 	public Query() {
 		super();
 		tableNames = new ArrayList<String>();
 		columnNames = new ArrayList<String>();
-		conditions = new ArrayList<String>();
+		selectConditions = new ArrayList<String>();
+		joinConditions = new ArrayList<String>();
 		classificationLevel = 4;
 	}
 	
@@ -18,14 +19,16 @@ public class Query {
 		this.classificationLevel = classificationLevel;
 		tableNames = new ArrayList<String>();
 		columnNames = new ArrayList<String>();
-		conditions = new ArrayList<String>();
+		selectConditions = new ArrayList<String>();
+		joinConditions = new ArrayList<String>();
 	}
 	
-	public Query(List<String> tableNames, List<String> columnNames, List<String> conditions, int classificationLevel) {
+	public Query(List<String> tableNames, List<String> columnNames, List<String> selectConditions,List<String> joinConditions, int classificationLevel) {
 		super();
 		this.tableNames = tableNames;
 		this.columnNames = columnNames;
-		this.conditions = conditions;
+		this.selectConditions = selectConditions;
+		this.joinConditions = joinConditions;
 		this.classificationLevel = classificationLevel;
 	}
 
@@ -49,12 +52,20 @@ public class Query {
 		this.columnNames = columnNames;
 	}
 
-	public List<String> getConditions() {
-		return conditions;
+	public List<String> getSelectConditions() {
+		return selectConditions;
 	}
 
-	public void setConditions(List<String> conditions) {
-		this.conditions = conditions;
+	public void setSelectConditions(List<String> conditions) {
+		this.selectConditions = conditions;
+	}
+
+	public List<String> getJoinConditions() {
+		return joinConditions;
+	}
+
+	public void setJoinConditions(List<String> conditions) {
+		this.joinConditions = conditions;
 	}
 
 	public int getClassificationLevel() {
@@ -75,7 +86,21 @@ public class Query {
 		tableNames = new ArrayList<String>(Arrays.asList(fromStage[0].split(",\\s")));
 		if (fromStage.length > 1) {
 			fromStage[1] = fromStage[1].replaceAll(";", "");
-			conditions = new ArrayList<String>(Arrays.asList(fromStage[1].split("\\sAND\\s")));
+			List<String> conditions = new ArrayList<String>(Arrays.asList(fromStage[1].split("\\sAND\\s")));
+			separateConditions(conditions);
 		}
+	}
+	
+	private void separateConditions(List<String> conditions) {
+		String[] tokens;
+		for (String condition : conditions) {
+			tokens = condition.split("=");
+			if (tokens[1].matches("[0-9]+")) {
+				selectConditions.add(condition);
+			} else {
+				joinConditions.add(condition);
+			}
+		}
+		
 	}
 }

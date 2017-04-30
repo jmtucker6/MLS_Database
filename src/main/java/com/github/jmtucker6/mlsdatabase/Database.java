@@ -24,13 +24,19 @@ public class Database {
 	public Relation processQuery(Query query) {
 		List<String> tableNames = query.getTableNames();
 		Relation relation = tables.get(tableNames.get(0));
+		String joinCondition;
 		if (tableNames.size() > 1) {
 			for (int i = 1; i < tableNames.size(); i++) {
-				relation = relation.join(tables.get(tableNames.get(i)), null);
+				if(query.getJoinConditions().size() >= i) {
+					joinCondition = query.getJoinConditions().get(i-1);
+				} else {
+					joinCondition = null;
+				}
+				relation = relation.join(tables.get(tableNames.get(i)), joinCondition);
 			}
 		}
 		try {
-			relation.applyConditions(query.getConditions(), query.getClassificationLevel());
+			relation.applyConditions(query.getSelectConditions(), query.getClassificationLevel());
 		} catch (Exception e) {
 			System.out.println("Error: Security Level Violation");
 			System.exit(0);
