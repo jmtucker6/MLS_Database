@@ -217,7 +217,7 @@ public class Relation {
 	public void filterClassified(int classificationLevel) {
 		Set<Map<String, Integer>> filteredTuples = new LinkedHashSet<Map<String, Integer>>();
 		for (Map<String, Integer> tuple : tuples) {
-			if (tuple.get("TC") <= classificationLevel)
+			if (tuple.get("TC") <= classificationLevel && tuple.get("KC") <= classificationLevel)
 				filteredTuples.add(tuple);
 		}
 		this.tuples = new LinkedHashSet<Map<String, Integer>>(filteredTuples);
