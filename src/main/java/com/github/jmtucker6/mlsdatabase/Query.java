@@ -103,7 +103,7 @@ public class Query {
 		String[] tokens;
 		for (String condition : conditions) {
 			tokens = condition.split("=");
-			if (tokens[1].matches("[0-9]+")) {
+			if (tokens[1].matches("[0-9]+") || (tokens[1].matches("[A-Z].") && tokens[0].charAt(0) == tokens[1].charAt(0))) {
 				selectConditions.add(condition);
 			} else {
 				joinConditions.add(condition);
